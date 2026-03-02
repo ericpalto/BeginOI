@@ -1,0 +1,39 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Create venv
+        run: uv venv --python 3.12
+
+      # CI intentionally installs a minimal dependency set sufficient to run the
+      # current test suite. Full research deps (e.g. JAX/PyBNN) may be heavier
+      # and can be added later as the benchmark coverage expands.
+      - name: Install deps
+        run: |
+          uv pip install --python .venv/bin/python -e . --no-deps
+          uv pip install --python .venv/bin/python pytest numpy hydra-core omegaconf matplotlib
+
+      - name: Run tests
+        run: .venv/bin/python -m pytest -q
+
