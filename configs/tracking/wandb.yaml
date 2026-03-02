@@ -1,0 +1,5 @@
+name: wandb
+project: beginoi
+mode: offline  # disabled|offline|online
+group: null
+tags: []

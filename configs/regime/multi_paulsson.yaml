@@ -1,0 +1,8 @@
+copy_mode: multi
+instrument: paulsson_machine
+theta_dynamics: continuous
+feedback: true
+program_kind: timeseries
+max_programs_per_unit: 64
+observation_schedule: streaming
+exposure_model: continuous

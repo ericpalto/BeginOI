@@ -1,0 +1,23 @@
+defaults:
+  - task: run
+  - regime: single_standard
+  - benchmark: bnn_perceptron
+  - policy: random
+  - experiment: basic
+  - metrics: default
+  - tracking: local_only
+  - _self_
+
+seed: 0
+
+budget:
+  total: 5.0
+
+hydra:
+  run:
+    dir: runs/${now:%Y-%m-%d}/${now:%H-%M-%S}_${benchmark.name}_${task.name}
+  sweep:
+    dir: runs/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
+  job:
+    chdir: true

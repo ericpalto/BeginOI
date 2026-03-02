@@ -1,0 +1,9 @@
+_target_: beginoi.benchmarks.ode_lotka_volterra.LotkaVolterraBenchmark
+name: ode_lotka_volterra
+grid_n1: 21
+grid_n2: 21
+t_final: 6.0
+dt: 0.03
+noise:
+  _target_: beginoi.benchmarks.mismatch.noise.ObservationNoise
+  sigma: 0.01

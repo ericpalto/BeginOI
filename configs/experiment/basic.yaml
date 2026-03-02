@@ -1,0 +1,5 @@
+_target_: beginoi.core.experiments.basic.BasicBatchExperiment
+max_programs: 1  # overridden by CLI from regime
+cost_per_unit: 1.0
+timeseries_extra_cost_per_step: 0.0
+streaming: false  # overridden by CLI from regime observation_schedule

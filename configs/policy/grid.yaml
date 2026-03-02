@@ -1,0 +1,2 @@
+_target_: beginoi.policies.grid_policy.GridPolicy
+batch_size: 1

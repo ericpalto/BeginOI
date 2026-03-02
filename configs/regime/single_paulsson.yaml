@@ -1,0 +1,8 @@
+copy_mode: single
+instrument: paulsson_machine
+theta_dynamics: discrete
+feedback: false
+program_kind: timeseries
+max_programs_per_unit: 32
+observation_schedule: end_only
+exposure_model: none

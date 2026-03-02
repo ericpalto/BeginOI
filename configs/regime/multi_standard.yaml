@@ -1,0 +1,8 @@
+copy_mode: multi
+instrument: standard_lab
+theta_dynamics: continuous
+feedback: false
+program_kind: constant
+max_programs_per_unit: 1
+observation_schedule: end_only
+exposure_model: piecewise_constant

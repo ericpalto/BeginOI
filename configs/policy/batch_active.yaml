@@ -1,0 +1,3 @@
+_target_: beginoi.policies.batch_active_policy.BatchActivePolicy
+batch_size: 4
+candidate_pool: 256

@@ -1,0 +1,3 @@
+_target_: beginoi.policies.random_policy.RandomPolicy
+batch_size: 1
+timeseries_length: 8

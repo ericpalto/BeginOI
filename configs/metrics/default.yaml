@@ -1,0 +1,3 @@
+- _target_: beginoi.metrics.heatmap.HeatmapErrorMetric
+  name_prefix: heatmap
+  oracle_seed: 0

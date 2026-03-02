@@ -1,0 +1,3 @@
+name: plot
+run_dir: .
+metric_key: heatmap_rmse
