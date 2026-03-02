@@ -5,3 +5,40 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+    "pylint>=4.0.5",
+    "pytest>=9.0.2",
+]
+
+[tool.black]
+line-length="88"
+
+[tool.isort]
+profile = "black"
+length_sort = "True"
+default_section = "THIRDPARTY"
+ignore_whitespace = "True"
+
+[tool.pylint.'MESSAGES CONTROL']
+disable="import-error, no-member, no-member, too-many-nested-blocks, too-many-lines, too-many-branches, invalid-name, too-many-boolean-expressions, missing-module-docstring, missing-function-docstring, too-few-public-methods, too-many-arguments, too-many-locals, too-many-instance-attributes, too-many-ancestors, fixme, logging-fstring-interpolation, protected-access, ungrouped-imports, too-many-statements, too-many-return-statements, too-many-positional-arguments, duplicate-code"
+
+[tool.pylint.'SIMILARITIES']
+min-similarity-lines="10"
+ignore-comments="yes"
+ignore-docstrings="yes"
+ignore-imports="yes"
+
+[tool.pylint.'BASIC']
+argument-rgx="([a-z_][a-z0-9_]{2,30})|tm$"     # snake_case + tm
+variable-rgx="([a-z_][a-z0-9_]{2,30})|tm$"     # snake_case + tm
+const-rgx="([^\\W\\da-z][^\\Wa-z]*|__.*__|name)$"  # UPPER_CASE + name
+
+[tool.pylint.'FORMAT']
+max-line-length="88"
+
+[tool.mypy]
+ignore_missing_imports = "True"
+disable_error_code = "name-defined"

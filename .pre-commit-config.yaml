@@ -1,0 +1,65 @@
+default_language_version:
+    python: python3.12
+
+exclude: '^(.mypy_cache|.github)'
+
+repos:
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.4.0
+  hooks:
+  - id: check-executables-have-shebangs
+    exclude: ".py"
+  - id: check-symlinks
+  - id: check-toml
+  - id: check-yaml
+  - id: debug-statements
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+    args:
+    - --fix=lf
+  - id: no-commit-to-branch
+  - id: trailing-whitespace
+
+- repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.1.9
+  hooks:
+  - id: remove-tabs
+    files: ".py"
+
+- repo: https://github.com/ambv/black
+  rev: 23.3.0
+  hooks:
+  - id: black
+
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+    - id: isort
+      name: isort (python)
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.3.0
+  hooks:
+    - id: mypy
+      args:
+        - --ignore-missing-imports
+        - --follow-imports=skip
+      additional_dependencies: [types-PyYAML]
+
+- repo: local
+  hooks:
+  - id: pylint
+    name: pylint
+    entry: pylint
+    language: system
+    types: [python]
+
+#- repo: local
+#  hooks:
+#    - id: pytest
+#      name: pytest
+#      entry: make test_all
+#      language: system
+#      pass_filenames: false
+#      always_run: true

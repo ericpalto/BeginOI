@@ -1,0 +1,11 @@
+name: beginoi
+channels:
+  - conda-forge
+  - defaults
+  - anaconda
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+    - pre-commit
+    - pylint
