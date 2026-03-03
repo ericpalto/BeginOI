@@ -8,6 +8,8 @@ n_mc: 2048
 
 # Probe sampling params
 probe_sampling:
+  audit_stratified: true
+  audit_candidate_pool: 2048
   audit_alpha_uniform: 0.5
   audit_beta_high: 0.3
   audit_gamma_boundary: 0.2

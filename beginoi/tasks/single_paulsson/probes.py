@@ -84,6 +84,8 @@ def _band_target(
 class ProbeSamplingConfig:
     """Heuristic probe sampling parameters for audit/design sets."""
 
+    audit_stratified: bool = True
+    audit_candidate_pool: int = 2048
     audit_alpha_uniform: float = 0.5
     audit_beta_high: float = 0.3
     audit_gamma_boundary: float = 0.2
@@ -101,6 +103,46 @@ def sample_audit(
     n = int(n)
     if n <= 0:
         return np.zeros((0, 2), dtype=float)
+    if bool(cfg.audit_stratified):
+        pool_n = max(int(cfg.audit_candidate_pool), n)
+        w = np.array(
+            [cfg.audit_alpha_uniform, cfg.audit_beta_high, cfg.audit_gamma_boundary],
+            dtype=float,
+        )
+        w = np.maximum(w, 0.0)
+        if float(np.sum(w)) <= 0:
+            w = np.array([1.0, 0.0, 0.0], dtype=float)
+        w = w / np.sum(w)
+        counts = rng.multinomial(pool_n, w)
+        u1 = rng.uniform(0.0, 1.0, size=(int(counts[0]), 2))
+        u2 = _rejection_high_target(
+            rng,
+            g_batch=g_batch,
+            n=int(counts[1]),
+            max_tries=int(cfg.max_rejection_tries),
+        )
+        u3 = _band_target(
+            rng,
+            g_batch=g_batch,
+            n=int(counts[2]),
+            tau_low=float(cfg.boundary_tau_low),
+            tau_high=float(cfg.boundary_tau_high),
+            max_tries=int(cfg.max_rejection_tries),
+        )
+        pool = np.vstack([u1, u2, u3])
+        if len(pool) < n:
+            pad = rng.uniform(0.0, 1.0, size=(n - len(pool), 2))
+            pool = np.vstack([pool, pad])
+        g = np.asarray(g_batch(pool), dtype=float)
+        order = np.argsort(g)
+        if len(order) <= n:
+            out = pool[order]
+        else:
+            idx = np.linspace(0, len(order) - 1, n, dtype=int)
+            out = pool[order[idx]]
+        rng.shuffle(out, axis=0)
+        return np.clip(out, 0.0, 1.0)
+
     w = np.array(
         [cfg.audit_alpha_uniform, cfg.audit_beta_high, cfg.audit_gamma_boundary],
         dtype=float,

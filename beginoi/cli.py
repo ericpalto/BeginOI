@@ -22,6 +22,27 @@ from beginoi.tracking.wandb_logger import WandbRunLogger
 from beginoi.tracking.sparc_round_logger import SparcRoundLogger
 
 
+def _resolve_configs_dir() -> Path:
+    """Locate Hydra `configs/` in both editable and installed contexts."""
+    # Editable/source runs: <repo>/beginoi/cli.py -> <repo>/configs
+    candidate = Path(__file__).resolve().parent.parent / "configs"
+    if candidate.exists():
+        return candidate
+    # Console script from repo root but installed wheel without configs:
+    # fall back to CWD/configs.
+    candidate = Path.cwd() / "configs"
+    if candidate.exists():
+        return candidate
+    mod = Path(__file__).resolve().parent.parent / "configs"
+    cwd = Path.cwd() / "configs"
+    raise RuntimeError(
+        "Primary Hydra config directory not found. Looked for " f"{mod} and {cwd}."
+    )
+
+
+_CONFIGS_DIR = _resolve_configs_dir()
+
+
 def _make_regime(cfg: DictConfig) -> Regime:
     def _require(value: str, *, allowed: set[str], field_name: str) -> str:
         if value not in allowed:
@@ -99,10 +120,12 @@ def _make_metrics(cfg: DictConfig, *, plant: Any) -> list[Any]:
     return metrics
 
 
-def _make_loggers(cfg: DictConfig, *, run_dir: Path) -> list[Any]:
+def _make_loggers(
+    cfg: DictConfig, *, run_dir: Path, plant: Any, benchmark: Any
+) -> list[Any]:
     loggers: list[Any] = []
     loggers.append(LocalRunLogger(run_dir=run_dir))
-    loggers.append(SparcRoundLogger(run_dir=run_dir))
+    loggers.append(SparcRoundLogger(run_dir=run_dir, plant=plant, benchmark=benchmark))
 
     tracking = cfg.tracking
     if tracking.name == "wandb":
@@ -132,7 +155,7 @@ def _task_run(cfg: DictConfig) -> dict[str, Any]:
 
     rng = np.random.default_rng(int(cfg.seed))
     metrics = _make_metrics(cfg.metrics, plant=plant)
-    loggers = _make_loggers(cfg, run_dir=run_dir)
+    loggers = _make_loggers(cfg, run_dir=run_dir, plant=plant, benchmark=benchmark)
 
     for logger in loggers:
         logger.open(config=OmegaConf.to_container(cfg, resolve=True))
@@ -175,7 +198,7 @@ def _task_summarize(cfg: DictConfig) -> dict[str, Any]:
     return {"count": len(rows), "out": str(out_path)}
 
 
-@hydra.main(version_base=None, config_path="../configs", config_name="config")
+@hydra.main(version_base=None, config_path=str(_CONFIGS_DIR), config_name="config")
 def main(cfg: DictConfig) -> Any:
     task = str(cfg.task.name)
     if task == "run":

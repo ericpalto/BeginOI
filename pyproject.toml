@@ -67,3 +67,9 @@ pybnn = { path = "../PyBNN", editable = true }
 [build-system]
 requires = ["hatchling>=1.24.0"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel.force-include]
+"configs" = "configs"
+
+[tool.hatch.build.targets.sdist.force-include]
+"configs" = "configs"

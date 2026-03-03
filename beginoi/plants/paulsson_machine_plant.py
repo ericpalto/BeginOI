@@ -108,6 +108,35 @@ class PaulssonRealMismatch:
     heteroscedastic: bool = False
     hetero_scale: float = 0.0
 
+    def mean_batch(
+        self,
+        *,
+        simulator: PaulssonMachineSimulator,
+        U: np.ndarray,
+        theta: np.ndarray,
+    ) -> np.ndarray:
+        U = np.asarray(U, dtype=float)
+        if U.ndim == 1:
+            U = U[None, :]
+        Uw = _warp(U, s=self.s_true, t=self.t_true)
+        y_sim = np.asarray(simulator.y_batch(Uw, theta), dtype=float)
+        y = self.a_true * y_sim + self.b_true
+        if self.residual is not None:
+            r = np.array([self.residual.residual(u) for u in U], dtype=float)
+            y = y + r
+        return np.asarray(y, dtype=float)
+
+    def mean(
+        self,
+        *,
+        simulator: PaulssonMachineSimulator,
+        u: np.ndarray,
+        theta: np.ndarray,
+    ) -> float:
+        return float(
+            self.mean_batch(simulator=simulator, U=np.asarray(u), theta=theta)[0]
+        )
+
     def apply(
         self,
         *,
@@ -169,6 +198,14 @@ class PaulssonMachinePlant:
         )
         program.meta.setdefault("noise_meta", dict(noise_meta))
         return float(y)
+
+    def real_mean_batch(self, U: np.ndarray, *, theta: np.ndarray) -> np.ndarray:
+        """Noise-free oracle mean over a batch of inputs (for plotting/debug)."""
+        return self.mismatch.mean_batch(
+            simulator=self.simulator,
+            U=np.asarray(U, dtype=float),
+            theta=np.asarray(theta, dtype=float),
+        )
 
     def apply_intervention(
         self,

@@ -13,7 +13,11 @@ def _corr(a: np.ndarray, b: np.ndarray) -> float:
         return float("nan")
     av = a - np.mean(a)
     bv = b - np.mean(b)
-    denom = float(np.sqrt(np.sum(av**2) * np.sum(bv**2)) + 1e-12)
+    sa = float(np.sqrt(np.sum(av**2)))
+    sb = float(np.sqrt(np.sum(bv**2)))
+    if sa < 1e-12 or sb < 1e-12:
+        return float("nan")
+    denom = float(sa * sb)
     return float(np.sum(av * bv) / denom)
 
 
