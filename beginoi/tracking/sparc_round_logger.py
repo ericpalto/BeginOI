@@ -11,6 +11,11 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt  # pylint: disable=wrong-import-position
 
+try:
+    import wandb  # type: ignore
+except ImportError:  # pragma: no cover
+    wandb = None  # type: ignore
+
 
 def _grid_points(grid: Any) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     x1 = np.asarray(grid.x1, dtype=float)
@@ -124,8 +129,10 @@ class SparcRoundLogger:
         ).reshape((len(x1), len(x2)))
 
         out_dir = self.run_dir / "sparc_heatmaps"
+        sim_path = out_dir / f"round_{round_id:03d}_y_sim.png"
+        real_path = out_dir / f"round_{round_id:03d}_y_real.png"
         _plot_heatmap(
-            out_path=out_dir / f"round_{round_id:03d}_y_sim.png",
+            out_path=sim_path,
             title=f"y_sim round {round_id}",
             x1=x1,
             x2=x2,
@@ -134,13 +141,41 @@ class SparcRoundLogger:
             U_design=U_design,
         )
         _plot_heatmap(
-            out_path=out_dir / f"round_{round_id:03d}_y_real.png",
+            out_path=real_path,
             title=f"y_real round {round_id}",
             x1=x1,
             x2=x2,
             y=y_real,
             U_audit=U_audit,
             U_design=U_design,
+        )
+        self._maybe_log_wandb_images(
+            round_id=round_id,
+            sim_path=sim_path,
+            real_path=real_path,
+        )
+
+    @staticmethod
+    def _maybe_log_wandb_images(
+        *,
+        round_id: int,
+        sim_path: Path,
+        real_path: Path,
+    ) -> None:
+        if wandb is None:
+            return
+        if getattr(wandb, "run", None) is None:
+            return
+        wandb.log(
+            {
+                "sparc_heatmaps/y_sim": wandb.Image(
+                    str(sim_path), caption=f"y_sim round {round_id}"
+                ),
+                "sparc_heatmaps/y_real": wandb.Image(
+                    str(real_path), caption=f"y_real round {round_id}"
+                ),
+            },
+            step=int(round_id),
         )
 
     def close(self, *, summary: dict[str, Any], history: Any) -> None:
