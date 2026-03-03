@@ -1,0 +1,41 @@
+_target_: beginoi.policies.sparc_policy.SparcPolicy
+
+# Budgets/config
+n_max: 8
+replicates: 3
+audit_frac: 0.25
+n_mc: 2048
+
+# Probe sampling params
+probe_sampling:
+  audit_alpha_uniform: 0.5
+  audit_beta_high: 0.3
+  audit_gamma_boundary: 0.2
+  boundary_tau_low: 0.45
+  boundary_tau_high: 0.55
+  max_rejection_tries: 64
+  design_spacefill_frac: 0.7
+  design_target_high_frac: 0.2
+  design_target_boundary_frac: 0.1
+
+# Mismatch fitting toggles
+mismatch_fit:
+  use_affine_y: true
+  use_input_warp: true
+  use_rbf_residual: false
+  n_rbf: 16
+  rbf_lengthscale: 0.25
+  rbf_seed: ${seed}
+  ridge_ab: 1.0e-6
+  ridge_c: 1.0e-2
+  warp_penalty: 1.0e-2
+  warp_lr: 0.1
+  warp_fd_eps: 1.0e-3
+  n_alt: 6
+  heteroscedastic_fit: false
+
+# Edit proposal params
+edit:
+  trust_radius: 0.06
+  edit_penalty: 1.0e-2
+  n_candidates: 256

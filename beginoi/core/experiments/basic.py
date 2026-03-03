@@ -63,6 +63,7 @@ class BasicBatchExperiment:
         for idx, program in enumerate(action.batch.programs):
             y = float(plant.observe(program, theta, rng=rng))
             noise_meta = dict(program.meta.get("noise_meta", {}))
+            extra = dict(program.meta)
             obs = Observation(
                 program_id=f"u{unit_id}_p{idx}",
                 inputs_summary={
@@ -73,8 +74,8 @@ class BasicBatchExperiment:
                 t_obs=float(getattr(theta, "time", 0.0)),
                 noise_meta=noise_meta,
                 unit_id=int(unit_id),
-                replicate_id=int(idx),
-                extra={},
+                replicate_id=int(program.meta.get("replicate_id", idx)),
+                extra=extra,
             )
             observations.append(obs)
 

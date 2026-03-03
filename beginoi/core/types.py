@@ -90,6 +90,7 @@ class History:
     actions: list[ControlAction] = field(default_factory=list)
     theta_snapshots: list[Any] = field(default_factory=list)
     budget_spent: float = 0.0
+    extras: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
