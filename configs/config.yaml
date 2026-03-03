@@ -5,7 +5,7 @@ defaults:
   - policy: random
   - experiment: basic
   - metrics: default
-  - tracking: local_only
+  - tracking: wandb
   - _self_
 
 seed: 0
