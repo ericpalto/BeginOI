@@ -177,3 +177,28 @@ class PyBNNSimToRealPlant:
                 program = Program(kind="constant", u=np.array([x1, x2], dtype=float))
                 y[i, j] = self.simulate(program, theta)
         return Heatmap(grid=grid_spec, y=y)
+
+
+class MoormanXORFunctionPlant(PyBNNSimToRealPlant):
+    """Specialized PyBNN plant for the Moorman two-node XOR function."""
+
+    def __init__(
+        self,
+        *,
+        backend: str = "numpy",
+        t_final: float = 30.0,
+        dt: float = 0.005,
+        noise: ObservationNoise | None = None,
+        structured_residual: StructuredResidualMismatch | None = None,
+        param_drift: ParamDriftMismatch | None = None,
+    ) -> None:
+        super().__init__(
+            formulation="moorman",
+            model="two_node_xor",
+            backend=backend,
+            t_final=t_final,
+            dt=dt,
+            noise=noise,
+            structured_residual=structured_residual,
+            param_drift=param_drift,
+        )

@@ -7,7 +7,7 @@ import numpy as np
 
 from beginoi.core.types import Heatmap, Program, GridSpec
 from beginoi.benchmarks.spec import make_grid
-from beginoi.plants.pybnn_plant import PyBNNSimToRealPlant
+from beginoi.plants.pybnn_plant import PyBNNSimToRealPlant, MoormanXORFunctionPlant
 from beginoi.benchmarks.mismatch.noise import ObservationNoise
 from beginoi.benchmarks.mismatch.param_drift import ParamDriftMismatch
 from beginoi.benchmarks.mismatch.structured_residual import RandomStructuredResidual
@@ -81,3 +81,53 @@ class BNNPerceptronBenchmark:
 
     def simulator_heatmap(self, plant: Any, theta: Any) -> Heatmap:
         return plant.evaluate_heatmap(theta, self.grid)
+
+
+@dataclass(frozen=True)
+class BNNXORFunctionBenchmark(BNNPerceptronBenchmark):
+    """PyBNN-backed benchmark using the Moorman two-node XOR circuit."""
+
+    name: str = "bnn_xor_function"
+    model: str = "two_node_xor"
+    t_final: float = 30.0
+    dt: float = 0.005
+
+    def make_plant(self, *, regime: Any, seed: int) -> MoormanXORFunctionPlant:
+        del regime, seed
+        residual = (
+            None
+            if self.structured_residual is None
+            else self.structured_residual.build()
+        )
+        return MoormanXORFunctionPlant(
+            backend=self.backend,
+            t_final=self.t_final,
+            dt=self.dt,
+            noise=self.noise,
+            structured_residual=residual,
+            param_drift=self.param_drift,
+        )
+
+    def oracle_heatmap(self, theta: Any, *, seed: int) -> Heatmap:
+        del seed
+        residual = (
+            None
+            if self.structured_residual is None
+            else self.structured_residual.build()
+        )
+        plant = MoormanXORFunctionPlant(
+            backend=self.backend,
+            t_final=self.t_final,
+            dt=self.dt,
+            noise=ObservationNoise(0.0),
+            structured_residual=residual,
+            param_drift=self.param_drift,
+        )
+        y = np.zeros((len(self.grid.x1), len(self.grid.x2)), dtype=float)
+        for i, x1 in enumerate(self.grid.x1):
+            for j, x2 in enumerate(self.grid.x2):
+                program = Program(kind="constant", u=np.array([x1, x2], dtype=float))
+                y[i, j] = float(
+                    plant.observe(program, theta, rng=np.random.default_rng(0))
+                )
+        return Heatmap(grid=self.grid, y=y)
