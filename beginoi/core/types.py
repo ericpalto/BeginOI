@@ -67,6 +67,9 @@ class Observation:
     inputs_summary: Mapping[str, Any]
     y: float
     t_obs: float
+    theta: ArrayLike | None = None
+    round_id: int = 0
+    schema_version: int = 2
     noise_meta: Mapping[str, Any] = field(default_factory=dict)
     unit_id: int = 0
     replicate_id: int = 0

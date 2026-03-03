@@ -18,11 +18,13 @@ theta0: [0.35, 0.35, 0.35, 0.25]
 theta_low: [0.10, 0.10, 0.05, 0.05]
 theta_high: [0.90, 0.90, 0.85, 0.60]
 
-# Synthetic sim-to-real mismatch (easy case: near-identity).
-a_true: 1.02
-b_true: -0.01
-s_true: [1.00, 1.00]
-t_true: [0.00, 0.00]
+# Synthetic sim-to-real mismatch.
+# Defaults emphasize a *learnable* gap: a substantial input warp with minimal
+# output affine distortion (so matching g(u) remains achievable by editing θ).
+a_true: 1.0
+b_true: 0.0
+s_true: [1.25, 0.75]
+t_true: [0.12, -0.08]
 
 # Optional structured residual on real output.
 residual_seed: 0
@@ -31,6 +33,6 @@ residual_lengthscale: 0.25
 residual_weight_scale: 0.02
 
 # Observation noise
-noise_sigma: 0.01
+noise_sigma: 0.02
 heteroscedastic: false
 hetero_scale: 0.0

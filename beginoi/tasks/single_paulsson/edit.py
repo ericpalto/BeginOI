@@ -24,6 +24,8 @@ class EditConfig:
         default_factory=lambda: np.array([0.9, 0.9, 0.85, 0.6], dtype=float)
     )
     n_candidates: int = 256
+    radius_power: float = 2.0
+    min_pred_improvement: float = 1e-4
 
 
 def y_hat_batch(
@@ -65,14 +67,17 @@ def propose_theta(
         return float(mse + pen)
 
     best_theta = np.clip(theta_k, low, high)
-    best_val = _obj(best_theta)
+    val_k = _obj(best_theta)
+    best_val = val_k
 
     d = len(theta_k)
     for _ in range(int(cfg.n_candidates)):
         z = rng.normal(0.0, 1.0, size=(d,))
         nz = float(np.linalg.norm(z) + 1e-12)
-        # Uniform in L2 ball radius.
-        rad = float(cfg.trust_radius) * float(rng.uniform(0.0, 1.0) ** (1.0 / d))
+        # Sample radii biased toward smaller steps for stability.
+        rad = float(cfg.trust_radius) * float(
+            rng.uniform(0.0, 1.0) ** (float(cfg.radius_power) / d)
+        )
         cand = theta_k + (rad / nz) * z
         cand = np.clip(cand, low, high)
         val = _obj(cand)
@@ -80,4 +85,14 @@ def propose_theta(
             best_val = val
             best_theta = cand
 
-    return best_theta, {"pred_obj": float(best_val)}
+    improvement = float(val_k - best_val)
+    if improvement < float(cfg.min_pred_improvement):
+        best_theta = np.clip(theta_k, low, high)
+        best_val = val_k
+        improvement = 0.0
+
+    return best_theta, {
+        "pred_obj": float(best_val),
+        "pred_obj_k": float(val_k),
+        "pred_obj_improvement": float(improvement),
+    }

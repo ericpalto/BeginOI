@@ -52,16 +52,16 @@ class PaulssonMachineBenchmark:
     theta0: tuple[float, float, float, float] = (0.35, 0.35, 0.35, 0.25)
     theta_low: tuple[float, float, float, float] = (0.1, 0.1, 0.05, 0.05)
     theta_high: tuple[float, float, float, float] = (0.9, 0.9, 0.85, 0.6)
-    # True mismatch params (easy case defaults: near-identity).
-    a_true: float = 1.02
-    b_true: float = -0.01
-    s_true: tuple[float, float] = (1.0, 1.0)
-    t_true: tuple[float, float] = (0.0, 0.0)
+    # True mismatch params (defaults emphasize a learnable gap via input warp).
+    a_true: float = 1.0
+    b_true: float = 0.0
+    s_true: tuple[float, float] = (1.25, 0.75)
+    t_true: tuple[float, float] = (0.12, -0.08)
     residual_seed: int = 0
     residual_num_features: int = 0
     residual_lengthscale: float = 0.25
     residual_weight_scale: float = 0.02
-    noise_sigma: float = 0.01
+    noise_sigma: float = 0.02
     heteroscedastic: bool = False
     hetero_scale: float = 0.0
 

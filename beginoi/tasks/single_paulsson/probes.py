@@ -95,6 +95,30 @@ class ProbeSamplingConfig:
     design_spacefill_frac: float = 0.7
     design_target_high_frac: float = 0.2
     design_target_boundary_frac: float = 0.1
+    design_anchor_count: int = 4
+
+
+def _sample_design_anchors(rng: np.random.Generator, n: int) -> np.ndarray:
+    n = int(n)
+    if n <= 0:
+        return np.zeros((0, 2), dtype=float)
+    canonical = np.array(
+        [
+            [0.0, 0.0],
+            [1.0, 0.0],
+            [0.0, 1.0],
+            [1.0, 1.0],
+            [0.5, 0.0],
+            [0.5, 1.0],
+            [0.0, 0.5],
+            [1.0, 0.5],
+            [0.5, 0.5],
+        ],
+        dtype=float,
+    )
+    perm = rng.permutation(len(canonical))
+    idx = np.resize(perm, n)
+    return canonical[idx]
 
 
 def sample_audit(
@@ -175,9 +199,12 @@ def sample_design_phase0(
     n = int(n)
     if n <= 0:
         return np.zeros((0, 2), dtype=float)
-    n_space = int(round(float(cfg.design_spacefill_frac) * n))
-    n_high = int(round(float(cfg.design_target_high_frac) * n))
-    n_band = max(0, n - n_space - n_high)
+    n_anchor = min(max(int(cfg.design_anchor_count), 0), n)
+    n_remaining = max(0, n - n_anchor)
+    n_space = int(round(float(cfg.design_spacefill_frac) * n_remaining))
+    n_high = int(round(float(cfg.design_target_high_frac) * n_remaining))
+    n_band = max(0, n_remaining - n_space - n_high)
+    u_anchor = _sample_design_anchors(rng, n_anchor)
     u_space = _latin_hypercube(rng, n_space, d=2)
     u_high = _rejection_high_target(
         rng, g_batch=g_batch, n=n_high, max_tries=int(cfg.max_rejection_tries)
@@ -190,6 +217,6 @@ def sample_design_phase0(
         tau_high=float(cfg.boundary_tau_high),
         max_tries=int(cfg.max_rejection_tries),
     )
-    out = np.vstack([u_space, u_high, u_band])
+    out = np.vstack([u_anchor, u_space, u_high, u_band])
     rng.shuffle(out, axis=0)
     return np.clip(out[:n], 0.0, 1.0)

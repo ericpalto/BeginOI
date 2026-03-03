@@ -1,10 +1,20 @@
 _target_: beginoi.policies.sparc_policy.SparcPolicy
 
 # Budgets/config
-n_max: 8
-replicates: 3
+n_max: 16
+replicates: 2
 audit_frac: 0.25
 n_mc: 2048
+
+history_fit:
+  mode: cumulative
+  window_rounds: 3
+
+# Optional sim-only warmstart (solve in silico before first real evaluation).
+sim_warmstart:
+  enabled: true
+  n_candidates: 1024
+  chunk_size: 128
 
 # Probe sampling params
 probe_sampling:
@@ -19,6 +29,7 @@ probe_sampling:
   design_spacefill_frac: 0.7
   design_target_high_frac: 0.2
   design_target_boundary_frac: 0.1
+  design_anchor_count: 4
 
 # Mismatch fitting toggles
 mismatch_fit:
@@ -35,9 +46,17 @@ mismatch_fit:
   warp_fd_eps: 1.0e-3
   n_alt: 6
   heteroscedastic_fit: false
+  smoothing: 0.25
+  enforce_positive_a: true
+  a_min: 0.05
+  a_max: 3.0
+  min_design_points_for_warp: 40
+  min_design_points_for_rbf: 120
 
 # Edit proposal params
 edit:
   trust_radius: 0.06
   edit_penalty: 1.0e-2
-  n_candidates: 256
+  n_candidates: 1024
+  radius_power: 2.0
+  min_pred_improvement: 1.0e-4

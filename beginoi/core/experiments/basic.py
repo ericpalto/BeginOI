@@ -14,6 +14,21 @@ from beginoi.core.types import (
 from beginoi.core.interfaces import Plant, FeedbackHandler
 
 
+def _extract_theta_vector(theta: Any) -> list[float] | None:
+    raw = getattr(theta, "theta", None)
+    if raw is None:
+        if isinstance(theta, (list, tuple, np.ndarray)):
+            raw = theta
+        else:
+            return None
+    arr = np.asarray(raw, dtype=float)
+    if arr.ndim == 0:
+        return [float(arr)]
+    if arr.ndim == 1:
+        return arr.astype(float).tolist()
+    return None
+
+
 @dataclass(frozen=True)
 class BasicBatchExperiment:
     """One budget unit runs a batch of programs under the current plant state."""
@@ -61,6 +76,7 @@ class BasicBatchExperiment:
 
         observations: list[Observation] = []
         for idx, program in enumerate(action.batch.programs):
+            theta_obs = _extract_theta_vector(theta)
             y = float(plant.observe(program, theta, rng=rng))
             noise_meta = dict(program.meta.get("noise_meta", {}))
             extra = dict(program.meta)
@@ -72,6 +88,9 @@ class BasicBatchExperiment:
                 },
                 y=y,
                 t_obs=float(getattr(theta, "time", 0.0)),
+                theta=theta_obs,
+                round_id=int(unit_id),
+                schema_version=2,
                 noise_meta=noise_meta,
                 unit_id=int(unit_id),
                 replicate_id=int(program.meta.get("replicate_id", idx)),

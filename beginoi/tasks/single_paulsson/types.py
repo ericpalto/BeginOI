@@ -25,6 +25,7 @@ class ProbeObservation:
 
     u: np.ndarray  # shape (2,)
     y_reps: np.ndarray  # shape (R,)
+    theta: np.ndarray | None = None  # shape (D,) if available
     y_mean: float = field(init=False)
     y_var: float = field(init=False)
 
@@ -35,6 +36,15 @@ class ProbeObservation:
         y = np.asarray(self.y_reps, dtype=float)
         if y.ndim != 1:
             raise ValueError(f"ProbeObservation.y_reps must be 1D, got {y.shape}.")
+        theta = self.theta
+        if theta is not None:
+            theta_arr = np.asarray(theta, dtype=float)
+            if theta_arr.ndim != 1:
+                raise ValueError(
+                    f"ProbeObservation.theta must be 1D when present, "
+                    f"got {theta_arr.shape}."
+                )
+            object.__setattr__(self, "theta", theta_arr)
         object.__setattr__(self, "u", u)
         object.__setattr__(self, "y_reps", y)
         object.__setattr__(self, "y_mean", float(np.mean(y)))

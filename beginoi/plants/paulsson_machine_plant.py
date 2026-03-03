@@ -53,7 +53,7 @@ def _warp(U: np.ndarray, *, s: np.ndarray, t: np.ndarray) -> np.ndarray:
     t = np.asarray(t, dtype=float)
     if s.shape != (2,) or t.shape != (2,):
         raise ValueError("Expected s,t with shape (2,).")
-    return np.clip(U * s[None, :] + t[None, :], 0.0, 1.0)
+    return U * s[None, :] + t[None, :]
 
 
 @dataclass(frozen=True)

@@ -9,6 +9,8 @@ from pathlib import Path
 from datetime import datetime, timezone
 from dataclasses import field, dataclass
 
+import numpy as np
+
 
 def _safe_git_head() -> str | None:
     try:
@@ -39,6 +41,7 @@ class LocalRunLogger:
             "python": sys.version,
             "platform": platform.platform(),
             "git_head": _safe_git_head(),
+            "schema_version": 2,
         }
         (self.run_dir / "meta.json").write_text(
             json.dumps(meta, indent=2, sort_keys=True)
@@ -62,11 +65,16 @@ class LocalRunLogger:
         obs = history.observations[self._written_obs :]
         for o in obs:
             rec = {
+                "schema_version": int(getattr(o, "schema_version", 1)),
+                "round_id": int(getattr(o, "round_id", o.unit_id)),
                 "unit_id": int(o.unit_id),
                 "program_id": o.program_id,
                 "inputs_summary": o.inputs_summary,
                 "y": float(o.y),
                 "t_obs": float(o.t_obs),
+                "theta": None
+                if getattr(o, "theta", None) is None
+                else np.asarray(getattr(o, "theta"), dtype=float).tolist(),
                 "noise_meta": dict(o.noise_meta),
                 "replicate_id": int(o.replicate_id),
                 "extra": dict(o.extra),
