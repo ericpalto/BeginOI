@@ -46,6 +46,14 @@ def run_loop(
     loggers = [] if loggers is None else list(loggers)
 
     while budget.remaining > 0.0:
+        stop_hook = getattr(policy, "should_stop", None)
+        if callable(stop_hook):
+            should_stop = bool(
+                stop_hook(history, budget_remaining=float(budget.remaining))
+            )
+            if should_stop:
+                break
+
         action: ControlAction = policy.act(history, budget_remaining=budget.remaining)
         regime.validate_action(action)
 

@@ -1,17 +1,17 @@
 defaults:
   - task: run
-  - regime: single_standard
-  - benchmark: bnn_perceptron
-  - policy: random
+  - regime: single_paulsson
+  - benchmark: bnn_xor_function
+  - policy: phoenix
   - experiment: basic
-  - metrics: default
+  - metrics: sparc
   - tracking: wandb
   - _self_
 
 seed: 0
 
 budget:
-  total: 5.0
+  total: 10.0
 
 hydra:
   run:

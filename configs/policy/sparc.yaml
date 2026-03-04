@@ -1,7 +1,7 @@
 _target_: beginoi.policies.sparc_policy.SparcPolicy
 
 # Budgets/config
-n_max: 16
+n_max: 64
 replicates: 2
 audit_frac: 0.25
 n_mc: 2048

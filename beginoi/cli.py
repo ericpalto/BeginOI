@@ -20,6 +20,7 @@ from beginoi.plots.learning_curve import plot_learning_curve
 from beginoi.tracking.local_writer import LocalRunLogger
 from beginoi.tracking.wandb_logger import WandbRunLogger
 from beginoi.tracking.sparc_round_logger import SparcRoundLogger
+from beginoi.tracking.phoenix_round_logger import PhoenixRoundLogger
 
 
 def _resolve_configs_dir() -> Path:
@@ -126,6 +127,7 @@ def _make_loggers(
     loggers: list[Any] = []
     loggers.append(LocalRunLogger(run_dir=run_dir))
     loggers.append(SparcRoundLogger(run_dir=run_dir, plant=plant, benchmark=benchmark))
+    loggers.append(PhoenixRoundLogger(run_dir=run_dir))
 
     tracking = cfg.tracking
     if tracking.name == "wandb":

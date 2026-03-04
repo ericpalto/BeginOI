@@ -1,0 +1,78 @@
+_target_: beginoi.policies.phoenix_policy.PhoenixPolicy
+
+n_max: 64
+replicates: 2
+audit_frac: 0.25
+n_mc: 1024
+
+probe_sampling:
+  audit_pool_size: 2048
+  post_pool_size: 1024
+  alpha_uniform: 0.5
+  beta_high: 0.3
+  gamma_boundary: 0.2
+  boundary_tau_low: 0.45
+  boundary_tau_high: 0.55
+  max_rejection_tries: 64
+  design_spacefill_frac_early: 0.55
+  design_spacefill_frac_stable: 0.75
+  design_target_high_frac: 0.20
+  design_target_boundary_frac: 0.10
+  design_anchor_count_early: 8
+  design_anchor_count_stable: 2
+  post_alpha_uniform: 0.4
+  post_beta_high: 0.4
+  post_gamma_boundary: 0.2
+
+mismatch_fit:
+  var_epsilon: 1.0e-6
+  loss: wls
+  huber_delta: 1.5
+  lambda_s: 1.0e-2
+  lambda_t: 1.0e-2
+  lambda_ab: 1.0e-2
+  warp_s_min: 0.7
+  warp_s_max: 1.3
+  warp_t_min: -0.2
+  warp_t_max: 0.2
+  a_min: 1.0e-3
+  n_alt: 8
+  n_warp_steps: 2
+  warp_lr: 0.08
+  warp_fd_eps: 1.0e-3
+  n_ab_steps: 25
+  ab_lr: 0.05
+
+edit:
+  eta: 1.0e-2
+  n_starts: 32
+  pattern_max_iters: 120
+  init_step_frac: 0.2
+  step_decay: 0.5
+  step_tol: 1.0e-4
+  alpha_candidates: [1.0, 0.5, 0.25, 0.125]
+  min_pred_improvement: 1.0e-4
+
+post_step:
+  enabled: true
+  n_post: 8
+  fit_include_post_step: false
+  overshoot_kappa: 2.0
+  damping_mode: drop_alpha_one
+  damping_scale: 0.5
+  damping_rounds: 2
+
+stability:
+  eps_alpha: 0.01
+  eps_b: 0.01
+  eps_s: 0.02
+  eps_t: 0.02
+  rounds_required: 2
+
+stop:
+  k_max: 30
+  patience: 5
+  tol: 1.0e-4
+  min_pred_improvement: 1.0e-4
+  post_gain_min: 0.0
+  noise_floor_factor: 1.2

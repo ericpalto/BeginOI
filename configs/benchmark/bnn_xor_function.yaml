@@ -2,15 +2,22 @@ _target_: beginoi.benchmarks.bnn_ode.BNNXORFunctionBenchmark
 name: bnn_xor_function
 grid_n1: 21
 grid_n2: 21
-backend: numpy
-t_final: 5.0
+backend: jax
+t_final: 10.0
 dt: 0.005
+
+# Stronger sim-to-real mismatch (substantial but still learnable).
+a_true: 1.0
+b_true: 0.0
+s_true: [1.20, 0.80]
+t_true: [0.0, 0.0]
+
 noise:
   _target_: beginoi.benchmarks.mismatch.noise.ObservationNoise
-  sigma: 0.01
+  sigma: 0.02
 structured_residual:
   _target_: beginoi.benchmarks.mismatch.structured_residual.RandomStructuredResidual
   seed: 0
-  num_features: 16
-  lengthscale: 0.25
-  weight_scale: 0.02
+  num_features: 24
+  lengthscale: 0.18
+  weight_scale: 0.08

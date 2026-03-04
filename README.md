@@ -8,6 +8,7 @@ Research repo for **budgeted sim-to-real calibration of steady-state I/O maps** 
 - Switch regimes (“quadrants”): `uv run beginoi task=run regime=multi_paulsson`
 - Switch benchmark/policy: `uv run beginoi task=run benchmark=ode_brusselator policy=batch_active`
 - Run Phase-0 SPARC in `single_paulsson`: `uv run beginoi task=run regime=single_paulsson benchmark=paulsson_machine policy=sparc metrics=sparc seed=0 budget.total=10`
+- Run PHOENIX in `single_paulsson`: `uv run beginoi task=run regime=single_paulsson benchmark=paulsson_machine policy=phoenix metrics=sparc seed=0 budget.total=10`
 - Plot a learning curve from a run dir: `uv run beginoi task=plot task.run_dir=runs/<...>`
 
 ## Tracking
